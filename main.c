@@ -1,6 +1,10 @@
 #include<windows.h>
+#include<stdint.h>
 
 #define Assert(Condition) if(Condition); else __debugbreak()
+#define return_if(Condition) if(!(Condition)); else return
+
+#include"toyrend_renderer.c"
 
 static LRESULT CALLBACK
 window_proc(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -68,6 +72,9 @@ void WinMainCRTStartup()
 {
 	disable_dpi_scaling();
 	HWND Window = create_window(1024, 768);
+	HDC WindowDC = GetDC(Window);
+	gdi_renderer* Renderer = renderer_create(Window);
+	SetWindowLongPtrW(Window, GWLP_USERDATA, (LONG_PTR)Renderer);
 
 	for(;;)
 	{
