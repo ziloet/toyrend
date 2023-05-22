@@ -3,6 +3,7 @@ typedef struct
 	HWND TargetWindow;
 	HDC MemoryDC;
 	BITMAPINFO Bitmap;
+	HBITMAP BitmapHandle;
 	uint32_t* PixelData;
 } gdi_renderer;
 
@@ -56,4 +57,46 @@ renderer_drawpixel(gdi_renderer* Renderer, LONG X, LONG Y, uint32_t Color)
 	int OutOfBounds = (X >= BufferWidth) | (Y >= BufferHeight);
 	return_if(OutOfBounds);
 	Renderer->PixelData[X + (Y * BufferWidth)] = Color;
+}
+
+static void
+renderer_drawline(gdi_renderer* Renderer, int X0, int Y0, int X1, int Y1, uint32_t Color)
+{
+	int DeltaX = X1 - X0;
+	int DeltaY = Y1 - Y0;
+	int StepX = sign(DeltaX);
+	int StepY = sign(DeltaY);
+	int Error = DeltaX + DeltaY;
+	int X = X0;
+	int Y = Y0;
+
+	for(;;)
+	{
+		renderer_drawpixel(Renderer, X, Y, Color);
+		int Done = ((X == X1) & (Y == Y1));
+		return_if(Done);
+
+		int Error2 = Error * 2;
+
+		if(Error2 >= DeltaY)
+		{
+			X += StepX;
+			Error += DeltaY;
+		}
+		if(Error2 >= DeltaX)
+		{
+			Y += StepY;
+			Error += DeltaX;
+		}
+	}
+}
+
+static void
+renderer_update(gdi_renderer* Renderer)
+{
+	HDC WindowDC = GetDC(Renderer->TargetWindow);
+	int Width = Renderer->Bitmap.bmiHeader.biWidth;
+	int Height = Renderer->Bitmap.bmiHeader.biHeight;
+	StretchDIBits(WindowDC, 0, 0, Width, Height, 0, 0, Width, Height, Renderer->PixelData, &Renderer->Bitmap, DIB_RGB_COLORS, SRCCOPY);
+	ReleaseDC(Renderer->TargetWindow, WindowDC);
 }

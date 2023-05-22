@@ -1,8 +1,11 @@
 #include<windows.h>
 #include<stdint.h>
 
+#define Abs(Value) (((Value) < 0) ? -(Value) : (Value))
+#define sign(Value) (((Value) < 0) ? -1 : ((Value) > 0) ? 1 : 0)
 #define Assert(Condition) if(Condition); else __debugbreak()
 #define return_if(Condition) if(!(Condition)); else return
+#define break_if(Condition) if(!(Condition)); else break
 
 #include"toyrend_renderer.c"
 
@@ -16,6 +19,13 @@ window_proc(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 		{
 			PostQuitMessage(0);
+		} break;
+
+		case WM_SIZE:
+		{
+			gdi_renderer* Renderer = (gdi_renderer*)GetWindowLongPtrW(Window, GWLP_USERDATA);
+			break_if(!Renderer);
+			renderer_resize(Renderer);
 		} break;
 
 		default:
@@ -79,14 +89,15 @@ void WinMainCRTStartup()
 	for(;;)
 	{
 		MSG Message;
-		GetMessageW(&Message, 0, 0, 0);
-		do
+		while(PeekMessageW(&Message, 0, 0, 0, PM_REMOVE))
 		{
 			if(Message.message == WM_QUIT)
 			{
 				ExitProcess(0);
 			}
 			DispatchMessageW(&Message);
-		} while(PeekMessageW(&Message, 0, 0, 0, PM_REMOVE));
+		}
+		renderer_clear(Renderer, 0x00000088);
+		renderer_update(Renderer);
 	}
 }
