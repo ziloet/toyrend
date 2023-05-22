@@ -85,6 +85,11 @@ void WinMainCRTStartup()
 	HDC WindowDC = GetDC(Window);
 	gdi_renderer* Renderer = renderer_create(Window);
 	SetWindowLongPtrW(Window, GWLP_USERDATA, (LONG_PTR)Renderer);
+	uint32_t X0 = 100;
+	uint32_t Y0 = 100;
+	uint32_t X1 = 500;
+	uint32_t Y1 = 500;
+	uint32_t LineColor = 0x00ff0000;
 
 	for(;;)
 	{
@@ -98,6 +103,7 @@ void WinMainCRTStartup()
 			DispatchMessageW(&Message);
 		}
 		renderer_clear(Renderer, 0x00000088);
+		renderer_drawline(Renderer, X0, Y0, X1, Y1, LineColor);
 		renderer_update(Renderer);
 	}
 }
