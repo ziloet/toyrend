@@ -1,11 +1,7 @@
 #include<windows.h>
 #include<stdint.h>
 
-#define Abs(Value) (((Value) < 0) ? -(Value) : (Value))
-#define sign(Value) (((Value) < 0) ? -1 : ((Value) > 0) ? 1 : 0)
-#define Assert(Condition) if(Condition); else __debugbreak()
-#define return_if(Condition) if(!(Condition)); else return
-#define break_if(Condition) if(!(Condition)); else break
+#include"toyrend.h"
 
 #include"toyrend_renderer.c"
 
