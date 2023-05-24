@@ -11,6 +11,10 @@ static void
 renderer_resize(gdi_renderer* Renderer)
 {
 	RECT WindowRect;
+	if(Renderer->PixelData)
+	{
+		VirtualFree(Renderer->PixelData, 0, MEM_RELEASE);
+	}
 	GetClientRect(Renderer->TargetWindow, &WindowRect);
 	LONG NewWidth = WindowRect.right - WindowRect.left;
 	LONG NewHeight = WindowRect.bottom - WindowRect.top;
