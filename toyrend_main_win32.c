@@ -100,6 +100,7 @@ void WinMainCRTStartup()
 		}
 		renderer_clear(Renderer, 0x00000088);
 		renderer_drawline(Renderer, X0, Y0, X1, Y1, LineColor);
+		renderer_drawcircle(Renderer, 500, 500, 100, 0x00ff00ff);
 		renderer_update(Renderer);
 	}
 }

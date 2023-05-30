@@ -96,6 +96,42 @@ renderer_drawline(gdi_renderer* Renderer, int X0, int Y0, int X1, int Y1, uint32
 }
 
 static void
+renderer_drawcircle(gdi_renderer* Renderer, uint32_t PositionX, uint32_t PositionY, uint32_t Radius, uint32_t Color)
+{
+	int F = 1 - Radius;
+	int ddF_X = 0;
+	int ddF_Y = -2 * Radius;
+	int X = 0;
+	int Y = Radius;
+
+	renderer_drawpixel(Renderer, PositionX, PositionY + Radius, Color);
+	renderer_drawpixel(Renderer, PositionX, PositionY - Radius, Color);
+	renderer_drawpixel(Renderer, PositionX + Radius, PositionY, Color);
+	renderer_drawpixel(Renderer, PositionX - Radius, PositionY, Color);
+
+	while(X < Y)
+	{
+		if(F >= 0)
+		{
+			Y -= 1;
+			ddF_Y += 2;
+			F += ddF_Y;
+		}
+		X += 1;
+		ddF_X += 2;
+		F += ddF_X + 1;
+		renderer_drawpixel(Renderer, PositionX + X, PositionY + Y, Color);
+		renderer_drawpixel(Renderer, PositionX - X, PositionY + Y, Color);
+		renderer_drawpixel(Renderer, PositionX + X, PositionY - Y, Color);
+		renderer_drawpixel(Renderer, PositionX - X, PositionY - Y, Color);
+		renderer_drawpixel(Renderer, PositionX + Y, PositionY + X, Color);
+		renderer_drawpixel(Renderer, PositionX - Y, PositionY + X, Color);
+		renderer_drawpixel(Renderer, PositionX + Y, PositionY - X, Color);
+		renderer_drawpixel(Renderer, PositionX - Y, PositionY - X, Color);
+	}
+}
+
+static void
 renderer_update(gdi_renderer* Renderer)
 {
 	HDC WindowDC = GetDC(Renderer->TargetWindow);
